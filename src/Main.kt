@@ -26,7 +26,7 @@ open class Aircraft(private val maxFlightLength: Int, private val fuelTankCapaci
     // вторичный конструктор для создания объектов класса с параметрами по умолчанию
     constructor() : this(9245, 280976)
 
-    val fuelConsumption: Double
+    private val fuelConsumption: Double
         get() = fuelTankCapacity.toDouble() / maxFlightLength
     open val info: String = "Aircraft info:\n" +
             "Maximum Flight Length = $maxFlightLength km\n" +
