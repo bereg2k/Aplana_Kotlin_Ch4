@@ -3,7 +3,6 @@
  */
 fun main(args: Array<String>) {
     val boeing747 = Boeing747(350)
-    println("Fuel Consumption of Boeing 747 is ${boeing747.fuelConsumption} L/km\n")
     println(boeing747.info)
 }
 
