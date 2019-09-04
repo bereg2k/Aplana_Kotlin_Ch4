@@ -1,108 +1,63 @@
-import java.text.DecimalFormat
-
-/** Задание 22: Авиакомпания 6. Вывод информации
- * 1. Создайте в классе Aircraft функцию для вывода характеристик самолетов в консоль.
- * 2. Переопределите данную функцию в классе Boeing747, так чтобы еще выводилась информация о пассажирах
- * 3. Сделайте свойства обоих классов видимыми только внутри этих классов и их наследниках,
- * кроме свойства наследуемого от интерфейса.
- * Свойства и функции интерфейсов не поддерживают модификатор protected и internal.
- * */
+/** Задание 23: Data class
+ *
+ * Создайте data класс для автомобилей. Он должен содержать марку автомобиля, цвет и номер.
+ *
+ * Выведите информацию об автомобилях в консоль.
+ */
 fun main(args: Array<String>) {
-    // объект класса в явном виде задающий количество мест в салоне
-    val boeing747 = Boeing747(350)
-    print(boeing747.info)
+    // создание объекта дата-класса автомобилей
+    val x5 = Car("BMW X5", "arctic white", "23WRE98")
+
+    // создание объектов дата классов мотоциклов:
+    // - две точные копии с одинаковыми значениями свойств из первичного конструктора, но с разными значениями свойств вне его
+    // - одна копия, отличающаяся только значением одного свойства из первичного конструктора
+    val r15 = Bike("Yamaha YZF R15 V3", "sea-foam green", "98QKJ75", 329)
+    val r15Clone = Bike("Yamaha YZF R15 V3", "sea-foam green", "98QKJ75", 329)
+    val r15Copy = r15.copy(color = "dirty asphalt")
+
+    // консольный вывод переопределенного метода toString() у дата-класса автомобилей
+    println(x5)
+    // консольный вывод стандартной реализации метода toString() у дата-класса мотоциклов
+    println(r15)
 
     println()
 
-    // объект другого класса, использующий значение количества мест в самолете по умолчанию
-    val superJet = SuperJet()
-    print(superJet.info)
+    // демонстрация вычисления функции hashCode() в зависимости от значений свойств
+    r15.price = 8000
+    r15Clone.price = 7999
+    r15Copy.price = 8000
+
+    println(r15.hashCode() == r15Clone.hashCode()) // true, т.к. совпадают все значения свойств из первичного конструктора
+    println(r15.hashCode() == r15Copy.hashCode()) // false, т.к. одно значение свойства из первичного конструктора различается
+
+    // по стандартному контракту эквивалентность объектов достигается равенством значений соответствующих свойств в первичном конструкторе
+    // (это дает одинаковые значения hashCode(), что в свою очередь влияет и на equals()
+    println(r15 == r15Clone) // ... поэтому здесь true
+    println(r15 == r15Copy) // ... а здесь - false
 }
 
 /**
- * Абстрактный класс-родитель для самолётов различных моделей.
- * Имеет свойства:
- * - maxFlightLength (максимальная дальность полета)
- * - fuelTankCapacity (предельный обьем топлива)
- * - fuelConsumption (расход топлива)
+ * Дата-класс автомобилей.
+ * Содержит перегрузку стандартной реализации метода toString() для дата-классов.
  */
-abstract class Aircraft(protected val maxFlightLength: Int, protected val fuelTankCapacity: Int) {
-    // вторичный конструктор для создания объектов класса с параметрами по умолчанию
-    constructor() : this(9245, 280976)
-
-    protected val fuelConsumption: Double
-        get() = fuelTankCapacity.toDouble() / maxFlightLength
-    open val info: String = "Aircraft info:\n" +
-            "Maximum Flight Length = $maxFlightLength km\n" +
-            "Fuel Tank Capacity = $fuelTankCapacity liters\n" +
-            "Fuel Consumption = ${DecimalFormat("#.###").format(fuelConsumption)} L/km\n"
-
-    // абстрактная функция получения средней цены за билет. Для реализации в классах-наследниках
-    protected abstract fun getAverageTicketPrice(): Double
-
-    // абстрактная реализация для названия самолета
-    protected abstract val name: String
-}
-
-/**
- * Интерфейс для классов, описывающих самолеты со свойствами:
- * - passengerSeatsNumber: количество мест в салоне самолета (имеет дефолтный геттер)
- * - businessClassSeatsNumber: количество мест в салоне для пассажиров бизнес-класса (абстрактное)
- */
-interface Passenger {
-    val passengerSeatsNumber: Int
-        get() = 250
-    val businessClassSeatsNumber: Int
-}
-
-/**
- * Класс-наследник от Aircraft для самолетов Boeing 747.
- * Первичный конструктор Boeing747 определен через вызов первичного конструктора Aircraft
- * с фиксированными значениями параметров maxFlightLength и fuelTankCapacity по умолчанию.
-
- * Реализует интерфейс Passenger, при этом переопределяет свойство passengerSeatsNumber, предоставляя
- * возможность вручную задать параметр при инициализации класса (игнорируя реализацию по умолчанию).
- * Также класс вынужденно переопределяет свойство businessClassSeatsNumber (т.к. оно абстрактное в интерфейсе Passenger)
- *
- * Ещё класс переопределяет свойство info, фактически дополняя свойство родителя своей дополнительной инфой.
- */
-class Boeing747(seats: Int) : Aircraft(10299, 300499), Passenger {
-    override val name = "Boeing 747"
-    override val passengerSeatsNumber: Int = seats
-    override val businessClassSeatsNumber: Int = seats / 10
-    override val info: String = "$name " + super.info +
-            "Number of passengers seats = $passengerSeatsNumber\n" +
-            "Number of business-class seats = $businessClassSeatsNumber\n" +
-            "Average ticket price = ${DecimalFormat("#.##").format(getAverageTicketPrice())} $\n"
-
-    /**
-     * Функция получения средней стоимости билета на самолет, исходя из внутренней бизнес-логики менеджмента Boeing.
-     */
-    override fun getAverageTicketPrice(): Double {
-        return fuelTankCapacity * 2.34 / ((passengerSeatsNumber - businessClassSeatsNumber) * 5.6)
+data class Car(val model: String,
+               val color: String,
+               val idNumber: String
+) {
+    override fun toString(): String {
+        return super.toString().substring(0, super.toString().indexOf('@', 0, false)) +
+                "'s model \"$model\" with $color color and ID number = $idNumber"
     }
 }
 
 /**
- * Еще один наследник Aircraft, также реализует интерфейс Passenger.
- * Но при этом не переопределяет его свойство passengerSeatsNumber.
- * При инициализации объекта данного класса значение свойства будет взято из геттера интерфейса Passenger.
- * Вынужденно переопределяет свойство businessClassSeatsNumber путем присваивания константного значения по умолчанию.
- *
- * Ещё класс переопределяет свойство info, фактически дополняя свойство родителя своей дополнительной инфой.
+ * Дата-класс мотоциклов.
+ * Обладает свойством price за пределами первичного конструктора.
  */
-class SuperJet : Aircraft(), Passenger {
-    override val name = "Super Jet"
-    override val businessClassSeatsNumber: Int = 10
-    override val info: String = "$name " + super.info +
-            "Number of passengers seats = $passengerSeatsNumber\n" +
-            "Number of business-class seats = $businessClassSeatsNumber\n" +
-            "Average ticket price = ${DecimalFormat("#.##").format(getAverageTicketPrice())} $\n"
-
-    /**
-     * Функция получения средней стоимости билета на самолет, исходя из внутренней бизнес-логики менеджмента Sukhoi.
-     */
-    override fun getAverageTicketPrice(): Double {
-        return fuelTankCapacity * 1.55 / (passengerSeatsNumber * 11.45)
-    }
+data class Bike(val model: String,
+                val color: String,
+                val idNumber: String,
+                val maxSpeed: Int
+) {
+    var price: Int = 5000
 }
