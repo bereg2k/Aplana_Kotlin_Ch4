@@ -1,7 +1,8 @@
-/** Задание 20: Авиакомпания 4. Интерфейс
- * Изменим реализацию пассажирских самолетов.
- * Создадим Интерфейс с названием Passenger со свойством, обозначающим вместимость пассажиров.
- * Уберем это свойство у класса Boeing747 и реализуем в нем новый интерфейс.
+import java.text.DecimalFormat
+
+/** Задание 21: Авиакомпания 5. Абстрактный класс
+ * Усовершенствуем программу так, чтобы нельзя было создать неопределенный тип самолета:
+ * сделайте класс Aircraft абстрактным.
  */
 fun main(args: Array<String>) {
     // объект класса в явном виде задающий количество мест в салоне
@@ -16,13 +17,13 @@ fun main(args: Array<String>) {
 }
 
 /**
- * Класс-родитель для самолётов различных моделей.
+ * Абстрактный класс-родитель для самолётов различных моделей.
  * Имеет свойства:
  * - maxFlightLength (максимальная дальность полета)
  * - fuelTankCapacity (предельный обьем топлива)
  * - fuelConsumption (расход топлива)
  */
-open class Aircraft(private val maxFlightLength: Int, private val fuelTankCapacity: Int) {
+abstract class Aircraft(private val maxFlightLength: Int, val fuelTankCapacity: Int) {
     // вторичный конструктор для создания объектов класса с параметрами по умолчанию
     constructor() : this(9245, 280976)
 
@@ -31,7 +32,10 @@ open class Aircraft(private val maxFlightLength: Int, private val fuelTankCapaci
     open val info: String = "Aircraft info:\n" +
             "Maximum Flight Length = $maxFlightLength km\n" +
             "Fuel Tank Capacity = $fuelTankCapacity liters\n" +
-            "Fuel Consumption = $fuelConsumption L/km\n"
+            "Fuel Consumption = ${DecimalFormat("#.###").format(fuelConsumption)} L/km\n"
+
+    // абстрактная функция получения средней цены за билет. Для реализации в классах-наследниках
+    abstract fun getAverageTicketPrice(): Double
 }
 
 /**
@@ -60,7 +64,15 @@ class Boeing747(seats: Int) : Aircraft(10299, 300499), Passenger {
     override val passengerSeatsNumber: Int = seats
     override val businessClassSeatsNumber: Int = seats / 10
     override val info: String = super.info + "Number of passengers seats = $passengerSeatsNumber\n" +
-            "Number of business-class seats = $businessClassSeatsNumber\n"
+            "Number of business-class seats = $businessClassSeatsNumber\n" +
+            "Average ticket price = ${DecimalFormat("#.##").format(getAverageTicketPrice())} $\n"
+
+    /**
+     * Функция получения средней стоимости билета на самолет, исходя из внутренней бизнес-логики менеджмента Boeing.
+     */
+    override fun getAverageTicketPrice(): Double {
+        return fuelTankCapacity * 2.34 / ((passengerSeatsNumber - businessClassSeatsNumber) * 5.6)
+    }
 }
 
 /**
@@ -74,5 +86,13 @@ class Boeing747(seats: Int) : Aircraft(10299, 300499), Passenger {
 class SuperJet : Aircraft(), Passenger {
     override val businessClassSeatsNumber: Int = 10
     override val info: String = super.info + "Number of passengers seats = $passengerSeatsNumber\n" +
-            "Number of business-class seats = $businessClassSeatsNumber\n"
+            "Number of business-class seats = $businessClassSeatsNumber\n" +
+            "Average ticket price = ${DecimalFormat("#.##").format(getAverageTicketPrice())} $\n"
+
+    /**
+     * Функция получения средней стоимости билета на самолет, исходя из внутренней бизнес-логики менеджмента Sukhoi.
+     */
+    override fun getAverageTicketPrice(): Double {
+        return fuelTankCapacity * 1.55 / (passengerSeatsNumber * 11.45)
+    }
 }
