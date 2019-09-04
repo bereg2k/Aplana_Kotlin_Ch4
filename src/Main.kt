@@ -1,9 +1,12 @@
 import java.text.DecimalFormat
 
-/** Задание 21: Авиакомпания 5. Абстрактный класс
- * Усовершенствуем программу так, чтобы нельзя было создать неопределенный тип самолета:
- * сделайте класс Aircraft абстрактным.
- */
+/** Задание 22: Авиакомпания 6. Вывод информации
+ * 1. Создайте в классе Aircraft функцию для вывода характеристик самолетов в консоль.
+ * 2. Переопределите данную функцию в классе Boeing747, так чтобы еще выводилась информация о пассажирах
+ * 3. Сделайте свойства обоих классов видимыми только внутри этих классов и их наследниках,
+ * кроме свойства наследуемого от интерфейса.
+ * Свойства и функции интерфейсов не поддерживают модификатор protected и internal.
+ * */
 fun main(args: Array<String>) {
     // объект класса в явном виде задающий количество мест в салоне
     val boeing747 = Boeing747(350)
@@ -23,11 +26,11 @@ fun main(args: Array<String>) {
  * - fuelTankCapacity (предельный обьем топлива)
  * - fuelConsumption (расход топлива)
  */
-abstract class Aircraft(private val maxFlightLength: Int, val fuelTankCapacity: Int) {
+abstract class Aircraft(protected val maxFlightLength: Int, protected val fuelTankCapacity: Int) {
     // вторичный конструктор для создания объектов класса с параметрами по умолчанию
     constructor() : this(9245, 280976)
 
-    private val fuelConsumption: Double
+    protected val fuelConsumption: Double
         get() = fuelTankCapacity.toDouble() / maxFlightLength
     open val info: String = "Aircraft info:\n" +
             "Maximum Flight Length = $maxFlightLength km\n" +
@@ -35,7 +38,10 @@ abstract class Aircraft(private val maxFlightLength: Int, val fuelTankCapacity: 
             "Fuel Consumption = ${DecimalFormat("#.###").format(fuelConsumption)} L/km\n"
 
     // абстрактная функция получения средней цены за билет. Для реализации в классах-наследниках
-    abstract fun getAverageTicketPrice(): Double
+    protected abstract fun getAverageTicketPrice(): Double
+
+    // абстрактная реализация для названия самолета
+    protected abstract val name: String
 }
 
 /**
@@ -61,9 +67,11 @@ interface Passenger {
  * Ещё класс переопределяет свойство info, фактически дополняя свойство родителя своей дополнительной инфой.
  */
 class Boeing747(seats: Int) : Aircraft(10299, 300499), Passenger {
+    override val name = "Boeing 747"
     override val passengerSeatsNumber: Int = seats
     override val businessClassSeatsNumber: Int = seats / 10
-    override val info: String = super.info + "Number of passengers seats = $passengerSeatsNumber\n" +
+    override val info: String = "$name " + super.info +
+            "Number of passengers seats = $passengerSeatsNumber\n" +
             "Number of business-class seats = $businessClassSeatsNumber\n" +
             "Average ticket price = ${DecimalFormat("#.##").format(getAverageTicketPrice())} $\n"
 
@@ -84,8 +92,10 @@ class Boeing747(seats: Int) : Aircraft(10299, 300499), Passenger {
  * Ещё класс переопределяет свойство info, фактически дополняя свойство родителя своей дополнительной инфой.
  */
 class SuperJet : Aircraft(), Passenger {
+    override val name = "Super Jet"
     override val businessClassSeatsNumber: Int = 10
-    override val info: String = super.info + "Number of passengers seats = $passengerSeatsNumber\n" +
+    override val info: String = "$name " + super.info +
+            "Number of passengers seats = $passengerSeatsNumber\n" +
             "Number of business-class seats = $businessClassSeatsNumber\n" +
             "Average ticket price = ${DecimalFormat("#.##").format(getAverageTicketPrice())} $\n"
 
