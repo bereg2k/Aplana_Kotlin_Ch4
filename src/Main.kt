@@ -6,13 +6,13 @@
 fun main(args: Array<String>) {
     // объект класса в явном виде задающий количество мест в салоне
     val boeing747 = Boeing747(350)
-    println(boeing747.info)
+    print(boeing747.info)
 
     println()
 
     // объект другого класса, использующий значение количества мест в самолете по умолчанию
     val superJet = SuperJet()
-    println(superJet.info)
+    print(superJet.info)
 }
 
 /**
@@ -54,12 +54,13 @@ interface Passenger {
  * возможность вручную задать параметр при инициализации класса (игнорируя реализацию по умолчанию).
  * Также класс вынужденно переопределяет свойство businessClassSeatsNumber (т.к. оно абстрактное в интерфейсе Passenger)
  *
- * Ещё класс переопределяет свойство info, фактически свойство родителя своей дополнительной инфой
+ * Ещё класс переопределяет свойство info, фактически дополняя свойство родителя своей дополнительной инфой.
  */
 class Boeing747(seats: Int) : Aircraft(10299, 300499), Passenger {
     override val passengerSeatsNumber: Int = seats
     override val businessClassSeatsNumber: Int = seats / 10
-    override val info: String = super.info + "Number of passengers seats = $passengerSeatsNumber"
+    override val info: String = super.info + "Number of passengers seats = $passengerSeatsNumber\n" +
+            "Number of business-class seats = $businessClassSeatsNumber\n"
 }
 
 /**
@@ -67,8 +68,11 @@ class Boeing747(seats: Int) : Aircraft(10299, 300499), Passenger {
  * Но при этом не переопределяет его свойство passengerSeatsNumber.
  * При инициализации объекта данного класса значение свойства будет взято из геттера интерфейса Passenger.
  * Вынужденно переопределяет свойство businessClassSeatsNumber путем присваивания константного значения по умолчанию.
+ *
+ * Ещё класс переопределяет свойство info, фактически дополняя свойство родителя своей дополнительной инфой.
  */
 class SuperJet : Aircraft(), Passenger {
     override val businessClassSeatsNumber: Int = 10
-    override val info: String = super.info + "Number of passengers seats = $passengerSeatsNumber"
+    override val info: String = super.info + "Number of passengers seats = $passengerSeatsNumber\n" +
+            "Number of business-class seats = $businessClassSeatsNumber\n"
 }
