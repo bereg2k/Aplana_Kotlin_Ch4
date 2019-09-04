@@ -1,23 +1,22 @@
-/** Задание 18: Авиакомпания 2. Конструктор
- * Усовершенствуйте программу для авиакомпании.
- * Пусть свойства: максимальная дальность полета и вместимость бака определяются через конструктор.
- * Для этих свойств значения определять не надо.
+/** Задание 19: Авиакомпания 3. Наследование
+ * Создадим наследника класса Aircraft с названием Boeing747 и добавим ему свойство, обозначающее вместимость пассажиров.
  */
 fun main(args: Array<String>) {
-    // создаем объект класса через первичный конструктор
-    val a380 = Aircraft(15200, 315292)
-    println("Fuel Consumption of Airbus A380 is ${a380.fuelConsumption} L/km\n")
-    println(a380.info)
-
-    // создаем еще один объект класса через вторичный конструктор
-    val a330 = Aircraft()
-    println("Fuel Consumption of Airbus A330 is ${a330.fuelConsumption} L/km\n")
-    println(a330.info)
+    val boeing747 = Boeing747(350)
+    println("Fuel Consumption of Boeing 747 is ${boeing747.fuelConsumption} L/km\n")
+    println(boeing747.info)
 }
 
-class Aircraft(private val maxFlightLength: Int, private val fuelTankCapacity: Int) {
+/**
+ * Класс-родитель для самолётов различных моделей.
+ * Имеет свойства:
+ * - maxFlightLength (максимальная дальность полета)
+ * - fuelTankCapacity (предельный обьем топлива)
+ * - fuelConsumption (расход топлива)
+ */
+open class Aircraft(private val maxFlightLength: Int, private val fuelTankCapacity: Int) {
     // вторичный конструктор для создания объектов класса с параметрами по умолчанию
-    constructor(): this(9245, 280976)
+    constructor() : this(9245, 280976)
 
     val fuelConsumption: Double
         get() = fuelTankCapacity.toDouble() / maxFlightLength
@@ -26,3 +25,11 @@ class Aircraft(private val maxFlightLength: Int, private val fuelTankCapacity: I
             "Fuel Tank Capacity = $fuelTankCapacity liters\n" +
             "Fuel Consumption = $fuelConsumption L/km"
 }
+
+/**
+ * Класс-наследник от Aircraft для самолетов Boeing 747.
+ * Определяет одно приватное поле passengerSeatsNumber - количество мест для пассажиров в салоне.
+ * Первичный конструктор Boeing747 определен через вызов первичного конструктора Aircraft
+ * с фиксированными значениями параметров maxFlightLength и fuelTankCapacity по умолчанию.
+ */
+class Boeing747(private val passengerSeatsNumber: Int) : Aircraft(10299, 300499)
