@@ -1,26 +1,24 @@
-/** Задание 17: Авиакомпания 1
- *
- * Поможем авиакомпании в создании программы для учета авиапарка.
- *
- * Создайте класс Aircraft и реализуйте в нем свойства, содержащие следующее:
- * - максимальная дальность полета
- * - вместимость бака
- * - расход топлива на 100 км.
- *
- * Установите значения по своему усмотрению.
- *
- * Переопределите геттер свойства содержащего расход топлива,
- * чтобы он самостоятельно рассчитывался из свойств дальности полета и вместимости бака.
+/** Задание 18: Авиакомпания 2. Конструктор
+ * Усовершенствуйте программу для авиакомпании.
+ * Пусть свойства: максимальная дальность полета и вместимость бака определяются через конструктор.
+ * Для этих свойств значения определять не надо.
  */
 fun main(args: Array<String>) {
-    val a380 = Aircraft()
+    // создаем объект класса через первичный конструктор
+    val a380 = Aircraft(15200, 315292)
     println("Fuel Consumption of Airbus A380 is ${a380.fuelConsumption} L/km\n")
     println(a380.info)
+
+    // создаем еще один объект класса через вторичный конструктор
+    val a330 = Aircraft()
+    println("Fuel Consumption of Airbus A330 is ${a330.fuelConsumption} L/km\n")
+    println(a330.info)
 }
 
-class Aircraft {
-    private var maxFlightLength: Int = 15200
-    private var fuelTankCapacity: Int = 315292
+class Aircraft(private val maxFlightLength: Int, private val fuelTankCapacity: Int) {
+    // вторичный конструктор для создания объектов класса с параметрами по умолчанию
+    constructor(): this(9245, 280976)
+
     val fuelConsumption: Double
         get() = fuelTankCapacity.toDouble() / maxFlightLength
     val info: String = "Aircraft info:\n" +
